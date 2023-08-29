@@ -1,0 +1,228 @@
+Microsoft Windows [Version 10.0.22000.376]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\WINDOWS\system32>cd C:\Program Files\MySQL\MySQL Server 8.0\bin
+
+C:\Program Files\MySQL\MySQL Server 8.0\bin>mysql -u root -p
+Enter password: ***********
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 12
+Server version: 8.0.27 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2021, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> CREATE DATABASE RAILWAY_RESERVATION_SYSTEM;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> USE RAILWAY_RESERVATION_SYSTEM;
+Database changed
+mysql> CREATE TABLE STATION( station_id INT, station_name VARCHAR(10), no_of_trains INT, no_of_routes INT, PRIMARY KEY(station_id) );
+Query OK, 0 rows affected (0.02 sec
+
+mysql> CREATE TABLE RESERVATION_OFFICER ( officer_id INT, officer_name VARCHAR(10), PRIMARY KEY(officer_id) );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> CREATE TABLE PASSENGER ( passenger_id INT, passenger_name VARCHAR(10), age INt, gender CHAR(5),address VARCHAR(15),seat_no INT, officer_id INT, station_id INT, PRIMARY KEY(passenger_id), FOREIGN KEY (officer_id) references RESERVATION_OFFICER(officer_id), FOREIGN KEY (station_id) references STATION (station_id) );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> CREATE TABLE TICKET ( ticket_id INT, train_id INT, date DATE, passenger_id INT,ticket_details VARCHAR(15),pay_no INT, pay_date DATE, pay_type VARCHAR(10), PRIMARY KEY(ticket_id), FOREIGN KEY (passenger_id) references PASSENGER (passenger_id) );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> CREATE TABLE PAYMENT ( pay_no INT,pay_date DATE,pay_type VARCHAR(10),passenger_id INT, PRIMARY KEY(pay_no), FOREIGN KEY (passenger_id) REFERENCES PASSENGER (passenger_id));
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> CREATE TABLE CANCEL ( pay_no INT,ticket_id INT,passenger_id INT,officer_id INT, PRIMARY KEY(pay_no, ticket_id), FOREIGN KEY (passenger_id) REFERENCES PASSENGER (passenger_id),FOREIGN KEY (officer_id) REFERENCES RESERVATION_OFFICER (officer_id));
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> CREATE TABLE OFFICER_TELE_NO ( officer_id INT, tele INT, PRIMARY KEY (officer_id,tele));
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> CREATE TABLE USER( user_id INT,username VARCHAR(10),password INT, security_quest Varchar(20), PRIMARY KEY(user_id));
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> CREATE TABLE ROUTE( route_no INT, arrival_time TIME,stop_number INT,departure_time TIME, PRIMARY KEY(route_no));
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> CREATE TABLE TRAIN (train_id INT, train_name VARCHAR(10),train_type VARCHAR(20),available_class VARCHAR(10),route_no INT,station_id INT, PRIMARY KEY (train_id), FOREIGN KEY(route_no) REFERENCES ROUTE(route_no), FOREIGN KEY(station_id) REFERENCES STATION(station_id));
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> CREATE TABLE TRAIN_CLASS ( no_of_seats INT, class_name VARCHAR(10), class_id INT,train_id INT, PRIMARY KEY(class_id), FOREIGN KEY(train_id) REFERENCES TRAIN(train_id));
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> CREATE TABLE TRAIN_STATUS (status_id INT, no_of_seats INT,available_seats INT,booked_seats INT,user_id INT, train_id INT, officer_id INT, PRIMARY KEY(status_id),FOREIGN KEY(user_id) REFERENCES USER (user_id), FOREIGN KEY(train_id) REFERENCES TRAIN (train_id),FOREIGN KEY(officer_id) REFERENCES RESERVATION_OFFICER(officer_id));
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> INSERT INTO STATION (station_id,station_name,no_of_trains,no_of_routes) VALUES ('1','Petta','5','5'),('2','Kandy','4','4'),('3','Badulla','3','2');
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO RESERVATION_OFFICER (officer_id,officer_name) VALUES ( '10','Sineth'),('20','Tisal'),('30','chamod');
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO PASSENGER (passenger_id,passenger_name,age,gender,address,seat_no,officer_id,station_id) VALUES ('1000','Ravindu','21','M','Colombo','11','10','1'),('2000','Kamala','19','F','Mathara','22','10','2'),('3000','Laksith','22','M','Jaffna','33','30','3');
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO TICKET (ticket_id,train_id,date,passenger_id,ticket_details,pay_no,pay_date,pay_type) VALUES ('6','100','2021-11-3','1000','Normal','600','2021-11-01','Cash'),('7','200','2021-12-12','2000','Normal','601','2021-12-01','Card'),('8','300','2021-12-11','3000','High','602','2021-12-05','Card');
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO PAYMENT (pay_no,pay_date,pay_type,passenger_id) VALUES ( '600','2021-11-01','Cash','1000'),('601','2021-12-01','Card','2000');
+Query OK, 2 rows affected (0.01 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO CANCEL (pay_no,ticket_id,passenger_id,officer_id) VALUES ( '601','7'.'2000','10');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.'2000','10')' at line 1
+mysql> INSERT INTO CANCEL (pay_no,ticket_id,passenger_id,officer_id) VALUES ( '601','7','2000','10');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> INSERT INTO OFFICER_TELE_NO (officer_id,tele) VALUES ( '10','01234567'),( '20','01237567'),( '30','01234569');
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO USER (user_id,username,password,security_quest) VALUES ( '22','Admin','11111','Normal'),( '33','Host','22222','NoFault');
+Query OK, 2 rows affected (0.01 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO ROUTE(route_no,arrival_time,stop_no,departure_time) VALUES ( '1000','06:10:00','20','07:20:00'),( '1001','07:10:00','30','08:20:00),( '1002','08:10:00','30','09:20:00);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '1002','08:10:00','30','09:20:00)' at line 1
+mysql> INSERT INTO ROUTE(route_no,arrival_time,stop_no,departure_time) VALUES ( '1000','06:10:00','20','07:20:00'),( '1001','07:10:00','30','08:20:00'),( '1002','08:10:00','30','09:20:00');
+ERROR 1054 (42S22): Unknown column 'stop_no' in 'field list'
+mysql> INSERT INTO ROUTE(route_no,arrival_time,stop_number,departure_time) VALUES ( '1000','06:10:00','20','07:20:00'),( '1001','07:10:00','30','08:20:00'),( '1002','08:10:00','30','09:20:00');
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO TRAIN(train_id,train_name,train_type,available_class,station_id) VALUES ( '100','MM','High','Normal','1'),( '200','YY','High','Normal','2'),( '300','SS','Low','Class','3');
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO TRAIN_STATUS (status_id,no_of_seats,available_seats,booked_seats,user_id,train_id,officer_id) VALUES ('99','50','50','50','22','100','10'),('88','60','50','30','33','200','20');
+Query OK, 2 rows affected (0.01 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO TRAIN_CLASS (no_of_class,class_name,class_id,train_id) VALUES ( '50','Normal','5555','100'),(  '60','High','6666','200');
+ERROR 1054 (42S22): Unknown column 'no_of_class' in 'field list'
+mysql> INSERT INTO TRAIN_CLASS (no_of_seats,class_name,class_id,train_id) VALUES ( '50','Normal','5555','100'),(  '60','High','6666','200');
+Query OK, 2 rows affected (0.01 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> select * from STATION;
++------------+--------------+--------------+--------------+
+| station_id | station_name | no_of_trains | no_of_routes |
++------------+--------------+--------------+--------------+
+|          1 | Petta        |            5 |            5 |
+|          2 | Kandy        |            4 |            4 |
+|          3 | Badulla      |            3 |            2 |
++------------+--------------+--------------+--------------+
+3 rows in set (0.00 sec)
+
+mysql> select * from RESERVATION_OFFICER;
++------------+--------------+
+| officer_id | officer_name |
++------------+--------------+
+|         10 | Sineth       |
+|         20 | Tisal        |
+|         30 | chamod       |
++------------+--------------+
+3 rows in set (0.00 sec)
+
+mysql> select * from PASSENGER;
++--------------+----------------+------+--------+---------+---------+------------+------------+
+| passenger_id | passenger_name | age  | gender | address | seat_no | officer_id | station_id |
++--------------+----------------+------+--------+---------+---------+------------+------------+
+|         1000 | Ravindu        |   21 | M      | Colombo |      11 |         10 |          1 |
+|         2000 | Kamala         |   19 | F      | Mathara |      22 |         10 |          2 |
+|         3000 | Laksith        |   22 | M      | Jaffna  |      33 |         30 |          3 |
++--------------+----------------+------+--------+---------+---------+------------+------------+
+3 rows in set (0.00 sec)
+
+mysql> select * from TICKET;
++-----------+----------+------------+--------------+----------------+--------+------------+----------+
+| ticket_id | train_id | date       | passenger_id | ticket_details | pay_no | pay_date   | pay_type |
++-----------+----------+------------+--------------+----------------+--------+------------+----------+
+|         6 |      100 | 2021-11-03 |         1000 | Normal         |    600 | 2021-11-01 | Cash     |
+|         7 |      200 | 2021-12-12 |         2000 | Normal         |    601 | 2021-12-01 | Card     |
+|         8 |      300 | 2021-12-11 |         3000 | High           |    602 | 2021-12-05 | Card     |
++-----------+----------+------------+--------------+----------------+--------+------------+----------+
+3 rows in set (0.00 sec)
+
+mysql> select * from PAYMENT;
++--------+------------+----------+--------------+
+| pay_no | pay_date   | pay_type | passenger_id |
++--------+------------+----------+--------------+
+|    600 | 2021-11-01 | Cash     |         1000 |
+|    601 | 2021-12-01 | Card     |         2000 |
++--------+------------+----------+--------------+
+2 rows in set (0.01 sec)
+
+mysql> select * from CANCEL;
++--------+-----------+--------------+------------+
+| pay_no | ticket_id | passenger_id | officer_id |
++--------+-----------+--------------+------------+
+|    601 |         7 |         2000 |         10 |
++--------+-----------+--------------+------------+
+1 row in set (0.00 sec)
+
+mysql> select * from OFFICER_TELE_NO;
++------------+---------+
+| officer_id | tele    |
++------------+---------+
+|         10 | 1234567 |
+|         20 | 1237567 |
+|         30 | 1234569 |
++------------+---------+
+3 rows in set (0.00 sec)
+
+mysql> select * from USER;
++---------+----------+----------+----------------+
+| user_id | username | password | security_quest |
++---------+----------+----------+----------------+
+|      22 | Admin    |    11111 | Normal         |
+|      33 | Host     |    22222 | NoFault        |
++---------+----------+----------+----------------+
+2 rows in set (0.00 sec)
+
+mysql> select * from ROUTE;
++----------+--------------+-------------+----------------+
+| route_no | arrival_time | stop_number | departure_time |
++----------+--------------+-------------+----------------+
+|     1000 | 06:10:00     |          20 | 07:20:00       |
+|     1001 | 07:10:00     |          30 | 08:20:00       |
+|     1002 | 08:10:00     |          30 | 09:20:00       |
++----------+--------------+-------------+----------------+
+3 rows in set (0.00 sec)
+
+mysql> select * from TRAIN;
++----------+------------+------------+-----------------+----------+------------+
+| train_id | train_name | train_type | available_class | route_no | station_id |
++----------+------------+------------+-----------------+----------+------------+
+|      100 | MM         | High       | Normal          |     NULL |          1 |
+|      200 | YY         | High       | Normal          |     NULL |          2 |
+|      300 | SS         | Low        | Class           |     NULL |          3 |
++----------+------------+------------+-----------------+----------+------------+
+3 rows in set (0.00 sec)
+
+mysql> select * from TRAIN_STATUS;
++-----------+-------------+-----------------+--------------+---------+----------+------------+
+| status_id | no_of_seats | available_seats | booked_seats | user_id | train_id | officer_id |
++-----------+-------------+-----------------+--------------+---------+----------+------------+
+|        88 |          60 |              50 |           30 |      33 |      200 |         20 |
+|        99 |          50 |              50 |           50 |      22 |      100 |         10 |
++-----------+-------------+-----------------+--------------+---------+----------+------------+
+2 rows in set (0.00 sec)
+
+mysql> select * from TRAIN_CLASS;
++-------------+------------+----------+----------+
+| no_of_seats | class_name | class_id | train_id |
++-------------+------------+----------+----------+
+|          50 | Normal     |     5555 |      100 |
+|          60 | High       |     6666 |      200 |
++-------------+------------+----------+----------+
+2 rows in set (0.00 sec)
